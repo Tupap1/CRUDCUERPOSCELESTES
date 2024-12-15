@@ -1,5 +1,6 @@
 package com.cuerposcelestes.controller;
 
+import com.cuerposcelestes.entity.Planeta;
 import com.cuerposcelestes.entity.Satelite;
 import com.cuerposcelestes.repository.SateliteRepository;
 
@@ -17,7 +18,7 @@ public class SateliteController {
         return repository.findAll();
     }
 
-    public Satelite getSateliteById(Long id) {
+    public Satelite getSateliteById(Integer id) {
         return repository.findById(id);
     }
 
@@ -25,9 +26,14 @@ public class SateliteController {
         repository.save(satelite);
     }
 
-    public void deleteSatelite(Long id) {
+    public void deleteSatelite(Integer id) {
         repository.delete(id);
     }
+    public void updateSatelite(Satelite satelite) {
+        repository.updateSatelite(satelite);
+        System.out.println("Satelite actualizado");
+    }
+
 
 
 

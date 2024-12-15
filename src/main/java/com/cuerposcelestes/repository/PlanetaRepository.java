@@ -1,5 +1,6 @@
 package com.cuerposcelestes.repository;
 
+import com.cuerposcelestes.entity.Estrella;
 import com.cuerposcelestes.entity.Planeta;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -20,7 +21,7 @@ public class PlanetaRepository {
                 .getResultList();
     }
 
-    public Planeta findById(Long id) {
+    public Planeta findById(Integer id) {
         return entityManager.find(Planeta.class, id);
     }
 
@@ -39,7 +40,7 @@ public class PlanetaRepository {
         }
     }
 
-    public void delete(Long id) {
+    public void delete(Integer id) {
         try {
             entityManager.getTransaction().begin();
             Planeta planeta = findById(id);
@@ -50,6 +51,31 @@ public class PlanetaRepository {
         } catch (Exception e) {
             entityManager.getTransaction().rollback();
             throw e;
+        }
+    }
+
+
+    public void updatePlaneta(Planeta planeta) {
+        try {
+            entityManager.getTransaction().begin();
+
+            Planeta planetaExistente = entityManager.find(Planeta.class, planeta.getId());
+            if (planetaExistente == null) {
+                throw new RuntimeException("No se encontró el planeta con ID: " + planeta.getId());
+            }
+
+            planetaExistente.setNombre(planeta.getNombre());
+            planetaExistente.setMasa(planeta.getMasa());
+            planetaExistente.setDistanciaSol(planeta.getDistanciaSol());
+
+            entityManager.merge(planetaExistente);
+
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            throw new RuntimeException("Error al actualiar planeta: " + e.getMessage());
         }
     }
 }

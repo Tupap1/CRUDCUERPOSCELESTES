@@ -1,6 +1,7 @@
 package com.cuerposcelestes.repository;
 
 import com.cuerposcelestes.entity.Satelite;
+import com.cuerposcelestes.entity.Satelite;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -12,7 +13,7 @@ public class SateliteRepository {
     private final EntityManager entityManager;
 
     public SateliteRepository() {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("defaultPU");
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
         this.entityManager = emf.createEntityManager();
 }
 
@@ -23,7 +24,7 @@ public class SateliteRepository {
                 .getResultList();
     }
 
-    public Satelite findById(Long id) {
+    public Satelite findById(Integer id) {
         return entityManager.find(Satelite.class, id);
     }
 
@@ -42,7 +43,7 @@ public class SateliteRepository {
         }
     }
 
-    public void delete(Long id) {
+    public void delete(Integer id) {
         try {
             entityManager.getTransaction().begin();
             Satelite satelite = findById(id);
@@ -53,6 +54,31 @@ public class SateliteRepository {
         } catch (Exception e) {
             entityManager.getTransaction().rollback();
             throw e;
+        }
+    }
+
+
+    public void updateSatelite(Satelite satelite) {
+        try {
+            entityManager.getTransaction().begin();
+
+            Satelite sateliteExistente = entityManager.find(Satelite.class, satelite.getId());
+            if (sateliteExistente == null) {
+                throw new RuntimeException("No se encontró el satelite con ID: " + satelite.getId());
+            }
+
+            sateliteExistente.setNombre(satelite.getNombre());
+            sateliteExistente.setTamano(satelite.getTamano());
+            sateliteExistente.setOrbita(satelite.getOrbita());
+
+            entityManager.merge(sateliteExistente);
+
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            throw new RuntimeException("Error al actualiar satelite: " + e.getMessage());
         }
     }
 }

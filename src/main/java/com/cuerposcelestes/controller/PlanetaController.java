@@ -1,5 +1,6 @@
 package com.cuerposcelestes.controller;
 
+import com.cuerposcelestes.entity.Estrella;
 import com.cuerposcelestes.entity.Planeta;
 import com.cuerposcelestes.repository.PlanetaRepository;
 
@@ -19,7 +20,7 @@ public class PlanetaController {
             return repository.findAll();
         }
 
-        public Planeta getPlanetaById(Long id) {
+        public Planeta getPlanetaById(Integer id) {
             return repository.findById(id);
         }
 
@@ -27,9 +28,14 @@ public class PlanetaController {
             repository.save(planeta);
         }
 
-        public void deletePlaneta(Long id) {
+        public void deletePlaneta(Integer id) {
             repository.delete(id);
         }
+
+        public void updatePlaneta(Planeta planeta) {
+        repository.updatePlaneta(planeta);
+        System.out.println("planeta actualizado");
+         }
 
 
 
